@@ -12,7 +12,8 @@
 // ⑤ 点右上角 GENERATE CODE；main() 会自动调用 SystemClock_Config() 与 MX_GPIO_Init()
 #include "main.h"      /* HAL 类型与 GPIO_PIN_x 引脚编号都来自它 */
 #define LED_NUM          5U         /* LED 个数 */
-#define LED_INTERVAL_MS  5000U      /* 每个状态持续时间（毫秒）；想快就改成 1000 / 500 */
+#define LED_CYCLE_MS     5000U      /* 一轮流水灯的总时长（毫秒）：5 秒走完一圈 */
+#define LED_STEP_MS      (LED_CYCLE_MS / LED_NUM)   /* 每个灯亮的时间 = 5s / 5 个 = 1s */
 /*
 - 极性开关：决定“写什么电平算点亮”。
   LED_ACTIVE_LOW = 0 → 高电平点亮：PAx ─电阻─ LED长脚，LED短脚 ─ GND
@@ -93,7 +94,7 @@ void chapter_main(void)
     {
         LED_SetAll(LED_OffLevel());                                   /* 全部熄灭 */
         HAL_GPIO_WritePin(LED_PORT[i], LED_PIN[i], LED_OnLevel());     /* 只点亮第 i 个 */
-        HAL_Delay(LED_INTERVAL_MS);                                   /* 保持一段时间 */
+        HAL_Delay(LED_STEP_MS);                                       /* 亮 1s，5 个灯走完正好 5s 一圈 */
 
         i++;                       /* 轮到下一个灯 */
         if (i >= LED_NUM)          /* 走到最后一个就回到第一个，形成“流水” */
